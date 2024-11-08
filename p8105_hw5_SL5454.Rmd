@@ -9,6 +9,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(broom)
 ```
 
 ## Problem 1
@@ -38,3 +39,30 @@ bday_samp |>
 ```
 
 The probability that at least two people in the group will share a birthday increasing with group size. Around group size of 23, the probability exceeds 50%.
+
+
+## Problem 2
+
+```{r}
+ttest = function(n = 30, sigma = 5, mu) {
+  
+  data = rnorm(n, mean = mu, sd = sigma)
+  
+  ttest_result = t.test(data, mu = 0) 
+  
+  tidy_result = broom::tidy(ttest_result)
+  
+  return(data.frame(mu_est = mean(data), p_value = tidy_result$p.value))
+}
+
+set.seed(123)
+ttest_df  
+  expand_grid(
+    iter = 1:5000,
+    mu = 0:6
+  ) |> 
+  mutate(res = map(mu, ttest)) |> 
+  unnest(res) 
+```
+
+
