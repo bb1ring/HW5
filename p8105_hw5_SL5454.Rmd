@@ -116,12 +116,28 @@ The estimates for samples where the null was rejected tend to be higher than the
 
 ```{r}
 us_homicide = 
-  read_csv("./data/homicide-data.csv")
+  read_csv("./data/homicide-data.csv") |>
+  janitor::clean_names()
 
-view(us_homicide)
+head(us_homicide)
 ```
 
 There are 12 variables in the raw dataset. It contains status and location of homicides reported from 2010 to 2016. It also includes variables that describe basic information of victims, such as name, sex and age.
+
+```{r}
+us_homicide |>
+  mutate(
+    state = if_else(city == "Tulsa" & state == "AL", "OK", state),
+    city_state = paste(city, state, sep = ",")
+  ) |>
+  group_by(city_state) |>
+  summarize(
+    total_homicides = n(),
+    unsolved_homicides = sum(disposition %in% c("Closed without arrest", "Open/No arrest"))
+  ) |>
+  ungroup() |>
+  knitr::kable()
+```
 
 ```{r}
 
