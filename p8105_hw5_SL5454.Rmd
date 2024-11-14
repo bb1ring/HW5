@@ -110,3 +110,20 @@ rejected |>
 ``` 
   
 The estimates for samples where the null was rejected tend to be higher than the true μ, especially for smaller effect sizes. Thus, the sample average of𝜇̂ across tests for which the null is rejected approximately equal to the true value of μ, but the sample mean 𝜇̂ differs from the true value μ when μ < 4.
+
+
+## Problem 3
+
+```{r}
+us_homicide = 
+  read_csv("./data/homicide-data.csv")
+
+view(us_homicide)
+```
+
+There are 12 variables in the raw dataset. It contains status and location of homicides reported from 2010 to 2016. It also includes variables that describe basic information of victims, such as name, sex and age.
+
+```{r}
+
+```
+
