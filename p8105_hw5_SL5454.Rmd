@@ -10,6 +10,7 @@ editor_options:
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(broom)
+library(purrr)
 ```
 
 ## Problem 1
@@ -109,7 +110,7 @@ rejected |>
        y = "Average Estimate of mu with Rejected Null")
 ``` 
   
-The estimates for samples where the null was rejected tend to be higher than the true μ, especially for smaller effect sizes. Thus, the sample average of𝜇̂ across tests for which the null is rejected approximately equal to the true value of μ, but the sample mean 𝜇̂ differs from the true value μ when μ < 4.
+The estimates for samples where the null was rejected tend to be higher than the true μ, especially for smaller effect sizes. Thus, the sample average of 𝜇̂ across tests for which the null is rejected approximately equal to the true value of μ, but the sample mean 𝜇̂ differs from the true value μ when μ < 4.
 
 
 ## Problem 3
@@ -119,7 +120,6 @@ us_homicide =
   read_csv("./data/homicide-data.csv") |>
   janitor::clean_names()
 
-head(us_homicide)
 ```
 
 There are 12 variables in the raw dataset. It contains status and location of homicides reported from 2010 to 2016. It also includes variables that describe basic information of victims, such as name, sex and age.
@@ -138,11 +138,10 @@ count_homicide =
   ) |>
   ungroup()
 
-count_homicide |>
-  knitr::kable()
+count_homicide
 ```
 
-Baltimore, MD
+### Baltimore, MD
 ```{r}
 baltimore = 
   count_homicide |>
@@ -159,5 +158,23 @@ baltimore_est =
   baltimore_prop|>
   select(estimate, conf.low, conf.high)
 
+```
+
+### Every city
+```{r}
+city_homicide = 
+  count_homicide |>
+  mutate(
+    test_result = map2(
+      unsolved_homicides,
+      total_homicides,
+      ~ prop.test(x = .x, n = .y)
+    )
+  ) |>
+  mutate(
+    test_result = map(test_result, broom::tidy)
+  ) |>
+  unnest(test_result) |>
+  select(city_state, estimate, conf.low, conf.high)
 ```
 
