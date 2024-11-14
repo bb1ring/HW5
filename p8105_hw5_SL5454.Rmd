@@ -125,7 +125,8 @@ head(us_homicide)
 There are 12 variables in the raw dataset. It contains status and location of homicides reported from 2010 to 2016. It also includes variables that describe basic information of victims, such as name, sex and age.
 
 ```{r}
-us_homicide |>
+count_homicide =
+  us_homicide |>
   mutate(
     state = if_else(city == "Tulsa" & state == "AL", "OK", state),
     city_state = paste(city, state, sep = ",")
@@ -135,11 +136,28 @@ us_homicide |>
     total_homicides = n(),
     unsolved_homicides = sum(disposition %in% c("Closed without arrest", "Open/No arrest"))
   ) |>
-  ungroup() |>
+  ungroup()
+
+count_homicide |>
   knitr::kable()
 ```
 
+Baltimore, MD
 ```{r}
+baltimore = 
+  count_homicide |>
+  filter(city_state == "Baltimore,MD") 
+
+baltimore_prop =
+  prop.test(
+    x = baltimore$unsolved_homicides,
+    n = baltimore$total_homicides
+  ) |>
+  broom::tidy() 
+
+baltimore_est =
+  baltimore_prop|>
+  select(estimate, conf.low, conf.high)
 
 ```
 
